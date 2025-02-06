@@ -61,8 +61,12 @@ const tick = () =>
     // mesh.rotation.y = elapsedTime;
 
     //Update Camera
-    camera.position.x = cursor.x * 3
+    camera.position.x = Math.sin(cursor.x * Math.PI * 2) * 2 
+    camera.position.z = Math.cos(cursor.x * Math.PI * 2) * 2 
     camera.position.y = cursor.y * 3
+    camera.lookAt(mesh.position)
+  
+
     camera.lookAt(mesh.position)
 
     // Render
