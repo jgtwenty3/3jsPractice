@@ -18,34 +18,70 @@ const canvas = document.querySelector('canvas.webgl')
 // Scene
 const scene = new THREE.Scene()
 
+//AxesHelper
+// const axesHelper = new THREE.AxesHelper()
+// scene.add(axesHelper)
 /**
  * Textures
  */
 const textureLoader = new THREE.TextureLoader()
+const matcapTexture = textureLoader.load('/textures/matcaps/9.png')
+matcapTexture.colorSpace = THREE.SRGBColorSpace
+
+const donutTexture = textureLoader.load('/textures/matcaps/2.png')
+donutTexture.colorSpace = THREE.SRGBColorSpace
 
 //Fonts
 const fontLoader = new FontLoader()
 fontLoader.load(
-    '/fonts/GKMC.json',
+    '/fonts/Cristone.json',
     (font) =>{
         const textGeometry = new TextGeometry(
-            "JUSTIN GUERRERO",{
+            "NOT LIKE US",{
                 font: font,
                 size : 0.5,
                 depth : 0.2,
-                curveSegments: 12,
+                curveSegments: 3,
                 bevelEnabled:true,
                 bevelThickness:0.03,
                 bevelSize:0.02,
                 bevelOffset:0,
-                bevelSegments:5
+                bevelSegments:3
 
             }
 
         )
-        const textMaterial = new THREE.MeshBasicMaterial()
+        // textGeometry.computeBoundingBox();
+        // textGeometry.translate(
+        //     - (textGeometry.boundingBox.max.x -0.02) * 0.5,
+        //     - (textGeometry.boundingBox.max.y-0.02) * 0.5,
+        //     - (textGeometry.boundingBox.max.z -0.03) * 0.5
+
+        // )
+        textGeometry.center()
+
+        const textMaterial = new THREE.MeshMatcapMaterial({matcap:matcapTexture})
         const text = new THREE.Mesh(textGeometry,textMaterial)
         scene.add(text)
+
+        const donutGeometry = new THREE.TorusGeometry(0.3, 0.2, 20,45)
+        const donutMaterial = new THREE.MeshMatcapMaterial({matcap:donutTexture})
+
+        for (let i = 0; i <300; i++) {
+            
+            const donut = new THREE.Mesh(donutGeometry,donutMaterial)
+            donut.position.x = (Math.random()-0.5) * 10
+            donut.position.y = (Math.random()-0.5) * 10
+            donut.position.z = (Math.random()-0.5) * 10
+
+            donut.rotation.x = Math.random() * Math.PI
+            donut.rotation.y = Math.random() * Math.PI
+
+            const scale = Math.random()
+            donut.scale.set(scale,scale,scale)
+
+            scene.add(donut)
+        }
     }
 )
 
