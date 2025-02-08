@@ -9,8 +9,8 @@ import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 /**
  * Base
  */
-// Debug
-const gui = new GUI()
+// // Debug
+// const gui = new GUI()
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -41,12 +41,12 @@ fontLoader.load(
                 font: font,
                 size : 0.5,
                 depth : 0.2,
-                curveSegments: 3,
+                curveSegments: 5,
                 bevelEnabled:true,
                 bevelThickness:0.03,
                 bevelSize:0.02,
                 bevelOffset:0,
-                bevelSegments:3
+                bevelSegments:5
 
             }
 
