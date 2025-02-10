@@ -16,17 +16,82 @@ const canvas = document.querySelector('canvas.webgl')
 // Scene
 const scene = new THREE.Scene()
 
+//Textures
+const textureLoader = new THREE.TextureLoader()
+
+const floorAlphaTexture = textureLoader.load('./floor/alpha.jpg')
+const floorColorTexture = textureLoader.load('./floor/coast_sand_rocks_02/coast_sand_rocks_02_diff_1k.jpg')
+const floorARMTexture = textureLoader.load('./floor/coast_sand_rocks_02/coast_sand_rocks_02_arm_1k.jpg')
+const floorNormalTexture = textureLoader.load('./floor/coast_sand_rocks_02/coast_sand_rocks_02_nor_gl_1k.jpg')
+const floorDisplacementTexture = textureLoader.load('./floor/coast_sand_rocks_02/coast_sand_rocks_02_disp_1k.jpg')
+
+floorColorTexture.repeat.set(8,8)
+floorColorTexture.wrapS = THREE.RepeatWrapping
+floorColorTexture.wrapT = THREE.RepeatWrapping
+floorColorTexture.colorSpace = THREE.SRGBColorSpace
+
+floorARMTexture.repeat.set(8,8)
+floorARMTexture.wrapS = THREE.RepeatWrapping
+floorARMTexture.wrapT = THREE.RepeatWrapping
+
+floorNormalTexture.repeat.set(8,8)
+floorNormalTexture.wrapS = THREE.RepeatWrapping
+floorNormalTexture.wrapT = THREE.RepeatWrapping
+
+floorDisplacementTexture.repeat.set(8,8)
+floorDisplacementTexture.wrapS = THREE.RepeatWrapping
+floorDisplacementTexture.wrapT = THREE.RepeatWrapping
+
+const wallColorTexture = textureLoader.load('./walls/mossy_brick/mossy_brick_diff_1k.jpg')
+const wallARMTexture = textureLoader.load('./walls//mossy_brick/mossy_brick_arm_1k.jpg')
+const wallNormalTexture = textureLoader.load('./walls/mossy_brick/mossy_brick_nor_gl_1k.jpg')
+
+wallColorTexture.colorSpace = THREE.SRGBColorSpace
+
+const roofColorTexture = textureLoader.load('./roof/roof_slates/roof_slates_02_diff_1k.jpg')
+const roofARMTexture = textureLoader.load('./roof/roof_slates/roof_slates_02_arm_1k.jpg')
+const roofNormalTexture = textureLoader.load('./roof/roof_slates/roof_slates_02_nor_gl_1k.jpg')
+const roofDisplacementTexture = textureLoader.load('./roof/roof_slates/roof_slates_02_disp_1k.jpg')
+
+roofColorTexture.colorSpace = THREE.SRGBColorSpace
+roofColorTexture.repeat.set(3,1)
+roofColorTexture.wrapS = THREE.RepeatWrapping
+
+roofARMTexture.repeat.set(3,1)
+roofARMTexture.wrapS = THREE.RepeatWrapping
+
+roofNormalTexture.repeat.set(3,1)
+roofNormalTexture.wrapS = THREE.RepeatWrapping
+
+
 /**
  * House
  */
 
 //Floor
 const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(20,20,20),
-    new THREE.MeshStandardMaterial()
+    new THREE.PlaneGeometry(20,20,100,100),
+    new THREE.MeshStandardMaterial({
+        alphaMap:floorAlphaTexture,
+        transparent: true,
+        map:floorColorTexture,
+        aoMap : floorARMTexture,
+        roughnessMap: floorARMTexture,
+        metalnessMap: floorARMTexture,
+        normalMap: floorNormalTexture,
+        displacementMap: floorDisplacementTexture,
+        displacementScale: 0.3,
+        displacementBias: -0.2
+    })
 )
 floor.rotation.x = - Math.PI * 0.5
 scene.add(floor)
+
+gui.add(floor.material, 'displacementScale').min(0).max(1).step(0.001).name('floorDisplacementScale')
+gui.add(floor.material, 'displacementBias').min(-1).max(1).step(0.001).name('floordisplacementBias')
+
+
+
 
 //House Container
 const house = new THREE.Group()
@@ -35,7 +100,13 @@ scene.add(house)
 //Walls
 const walls = new THREE.Mesh(
     new THREE.BoxGeometry(4,2.5,4),
-    new THREE.MeshStandardMaterial()
+    new THREE.MeshStandardMaterial({
+        map:wallColorTexture,
+        aoMap: wallARMTexture,
+        roughnessMap: wallARMTexture,
+        metalnessMap:wallARMTexture,
+        normalMap:wallNormalTexture
+    })
 )
 walls.position.y +=1.25
 house.add(walls)
@@ -43,7 +114,14 @@ house.add(walls)
 //Roof
 const roof = new THREE.Mesh(
     new THREE.ConeGeometry(3.5,1.5,4),
-    new THREE.MeshStandardMaterial()
+    new THREE.MeshStandardMaterial({
+        map:roofColorTexture,
+        aoMap:roofARMTexture,
+        roughnessMap:roofARMTexture,
+        metalnessMap:roofARMTexture,
+        normalMap:roofNormalTexture,
+       
+    })
 )
 roof.position.y += 2.5 + 0.75
 roof.rotation.y = Math.PI * 0.25
