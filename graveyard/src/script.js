@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import {Sky} from "three/addons/objects/Sky.js"
 import { Timer } from 'three/addons/misc/Timer.js'
 import GUI from 'lil-gui'
 
@@ -265,13 +266,24 @@ for (let i = 0; i <30; i ++){
  * Lights
  */
 // Ambient light
-const ambientLight = new THREE.AmbientLight('#86cdfff', 0.275)
+const ambientLight = new THREE.AmbientLight('#86cdff', 0.275)
 scene.add(ambientLight)
 
 // Directional light
 const directionalLight = new THREE.DirectionalLight('#86cdff', 1)
 directionalLight.position.set(3, 2, -8)
 scene.add(directionalLight)
+
+const doorLight = new THREE.PointLight('#ff7d46', 5)
+doorLight.position.set(0,2.2,2.5)
+house.add(doorLight)
+
+//Ghosts
+const ghost1 = new THREE.PointLight('#A6EDE3', 6)
+const ghost2 = new THREE.PointLight('#C9FCD4', 6)
+const ghost3 = new THREE.PointLight('#7BAF83', 6)
+scene.add(ghost1,ghost2,ghost3)
+
 
 /**
  * Sizes
@@ -319,6 +331,57 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
+//Shadows
+renderer.shadowMap.enabled = true
+renderer.shadowMap.type = THREE.PCFSoftShadowMap
+
+//cast and receive shadows
+directionalLight.castShadow = true
+ghost1.castShadow = true
+ghost2.castShadow = true
+ghost3.castShadow = true
+walls.castShadow = true
+walls.receiveShadow = true
+roof.castShadow = true
+floor.receiveShadow = true
+
+for (const grave of graves.children){
+    grave.castShadow = true
+    grave.receiveShadow = true
+}
+
+//Mapping
+directionalLight.shadow.mapSize.width = 256
+directionalLight.shadow.mapSize.height = 256
+directionalLight.shadow.camera.top = 8 
+directionalLight.shadow.camera.right = 8 
+directionalLight.shadow.camera.bottom = -8
+directionalLight.shadow.camera.left = -8
+directionalLight.shadow.camera.near = 1
+directionalLight.shadow.camera.far = 20
+
+ghost1.shadow.mapSize.width = 256
+ghost1.shadow.mapSize.height = 256
+ghost1.shadow.camera.far = 10
+
+ghost2.shadow.mapSize.width = 256
+ghost2.shadow.mapSize.height = 256
+ghost2.shadow.camera.far = 10
+
+ghost3.shadow.mapSize.width = 256
+ghost3.shadow.mapSize.height = 256
+ghost3.shadow.camera.far = 10
+
+//Sky
+
+const sky = new Sky();
+sky.material.uniforms['turbidity'].value = 10
+sky.material.uniforms['rayleigh'].value = 3
+sky.material.uniforms['mieCoefficient'].value = 0.1
+sky.material.uniforms['mieDirectionalG'].value = 0.95
+sky.material.uniforms['sunPosition'].value.set(0.3, -0.038, -0.95)
+
+scene.add(sky)
 /**
  * Animate
  */
@@ -330,6 +393,22 @@ const tick = () =>
     timer.update()
     const elapsedTime = timer.getElapsed()
 
+    //Ghost
+    const ghost1Angle = elapsedTime * 0.5
+    ghost1.position.x = Math.cos(ghost1Angle) * 4
+    ghost1.position.z = Math.sin(ghost1Angle) * 4
+    ghost1.position.y = Math.sin(ghost1Angle) * Math.sin(ghost1Angle * 2.34) * Math.sin(ghost1Angle * 3.45)
+    
+    const ghost2Angle = - elapsedTime * 0.38
+    ghost2.position.x = Math.cos(ghost2Angle) * 4
+    ghost2.position.z = Math.sin(ghost2Angle) * 4
+    ghost2.position.y = Math.sin(ghost2Angle) * Math.sin(ghost2Angle * 2.34) * Math.sin(ghost2Angle * 3.45)
+    
+    const ghost3Angle = elapsedTime * 0.23
+    ghost3.position.x = Math.cos(ghost3Angle) * 6
+    ghost3.position.z = Math.sin(ghost3Angle) * 6
+    ghost3.position.y = Math.sin(ghost3Angle) * Math.sin(ghost3Angle * 2.34) * Math.sin(ghost3Angle * 3.45)
+    
     // Update controls
     controls.update()
 
