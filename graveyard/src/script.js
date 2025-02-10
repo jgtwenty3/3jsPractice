@@ -66,7 +66,7 @@ roofNormalTexture.wrapS = THREE.RepeatWrapping
 const bushColorTexture = textureLoader.load('./bushes/forest_leaves/forest_leaves_03_diff_1k.jpg')
 const bushARMTexture = textureLoader.load('./bushes/forest_leaves/forest_leaves_03_arm_1k.jpg')
 const bushNormalTexture = textureLoader.load('./bushes/forest_leaves/forest_leaves_03_nor_gl_1k.jpg')
-const bushDisplacementTexture = textureLoader.load('./bushes/forest_leaves/forest_leaves_03_disp_1k.jpg')
+// const bushDisplacementTexture = textureLoader.load('./bushes/forest_leaves/forest_leaves_03_disp_1k.jpg')
 
 bushColorTexture.colorSpace = THREE.SRGBColorSpace
 bushColorTexture.repeat.set(2,1)
@@ -79,6 +79,22 @@ bushARMTexture.wrapS = THREE.RepeatWrapping
 bushNormalTexture.repeat.set(2,1)
 bushNormalTexture.wrapS = THREE.RepeatWrapping
 
+const graveColorTexture = textureLoader.load('./graves/plastered_stone_wall/plastered_stone_wall_diff_1k.jpg')
+const graveARMTexture = textureLoader.load('./graves/plastered_stone_wall/plastered_stone_wall_arm_1k.jpg')
+const graveNormalTexture = textureLoader.load('./graves/plastered_stone_wall/plastered_stone_wall_nor_gl_1k.jpg')
+// const graveDisplacementTexture = textureLoader.load('./graves/plasterd_stone_wall/plastered_stone_wall_diff_1k.jpg')
+
+graveColorTexture.colorSpace = THREE.SRGBColorSpace
+
+const doorColorTexture = textureLoader.load('./door/color.jpg')
+const doorAlphaTexture = textureLoader.load('./door/alpha.jpg')
+const doorAmbientOcclusionTexture = textureLoader.load('./door/ambientOcclusion.jpg')
+const doorHeightTexture = textureLoader.load('./door/height.jpg')
+const doorNormalTexture = textureLoader.load('./door/normal.jpg')
+const doorMetalnessTexture = textureLoader.load('./door/metalness.jpg')
+const doorRoughnessTexture = textureLoader.load('./door/roughness.jpg')
+
+doorColorTexture.colorSpace = THREE.SRGBColorSpace
 /**
  * House
  */
@@ -144,8 +160,20 @@ house.add(roof)
 
 //Door
 const door = new THREE.Mesh(
-    new THREE.PlaneGeometry(2.2,2.2),
-    new THREE.MeshStandardMaterial()
+    new THREE.PlaneGeometry(2.2, 2.2, 100,100),
+    new THREE.MeshStandardMaterial({
+        color:('#73665C'),
+        map: doorColorTexture,
+        transparent: true,
+        alphaMap: doorAlphaTexture,
+        aoMap: doorAmbientOcclusionTexture,
+        displacementMap: doorHeightTexture,
+        displacementBias:-0.04,
+        displacementScale:0.15,
+        normalMap: doorNormalTexture,
+        metalnessMap: doorMetalnessTexture,
+        roughnessMap: doorRoughnessTexture
+    })
 )
 door.position.y = 1
 door.position.z = 2 +0.001
@@ -154,6 +182,7 @@ house.add(door)
 //Bushes
 const bushGeometry = new THREE.SphereGeometry(1,16,16)
 const bushMaterial = new THREE.MeshStandardMaterial({
+    color:'#ccffcc',
     map:bushColorTexture,
     aoMap:bushARMTexture,
     roughnessMap:bushARMTexture,
@@ -201,7 +230,13 @@ house.add(bush1,bush2,bush3,bush4)
 
 //Graves
 const graveGeometry = new THREE.BoxGeometry(0.6,0.8,0.2)
-const graveMaterial = new THREE.MeshStandardMaterial()
+const graveMaterial = new THREE.MeshStandardMaterial({
+    map:graveColorTexture,
+    aoMap:graveARMTexture,
+    roughnessMap:graveARMTexture,
+    metalnessMap:graveARMTexture,
+    normalMap:graveNormalTexture,
+})
 
 const graves = new THREE.Group()
 scene.add(graves)
@@ -230,11 +265,11 @@ for (let i = 0; i <30; i ++){
  * Lights
  */
 // Ambient light
-const ambientLight = new THREE.AmbientLight('#ffffff', 0.5)
+const ambientLight = new THREE.AmbientLight('#86cdfff', 0.275)
 scene.add(ambientLight)
 
 // Directional light
-const directionalLight = new THREE.DirectionalLight('#ffffff', 1.5)
+const directionalLight = new THREE.DirectionalLight('#86cdff', 1)
 directionalLight.position.set(3, 2, -8)
 scene.add(directionalLight)
 
