@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import GUI from 'lil-gui'
+import gsap from 'gsap'
 
 /**
  * Debug
@@ -10,11 +11,11 @@ const parameters = {
     materialColor: '#ffeded'
 }
 
-gui
-    .addColor(parameters, 'materialColor')
-    .onChange(()=>{
-        material.color.set(parameters.materialColor)
-    })
+// gui
+//     .addColor(parameters, 'materialColor')
+//     .onChange(()=>{
+//         material.color.set(parameters.materialColor)
+//     })
 
 
 /**
@@ -77,6 +78,37 @@ const sectionMeshes = [
     mesh3
 ]
 
+//Particles
+const particleCount = 200
+const positions = new Float32Array(particleCount * 3)
+
+for(let i = 0; i < particleCount; i++)
+{
+    positions[i * 3 + 0] = (Math.random() - 0.5) * 10
+    positions[i * 3 + 1] = objectsDistance * 0.5 - Math.random() * objectsDistance * sectionMeshes.length
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 10
+}
+
+const particlesGeometry = new THREE.BufferGeometry()
+particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+
+const particlesMaterial = new THREE.PointsMaterial({
+    color: parameters.materialColor,
+    sizeAttenuation: true,
+    size: 0.03
+})
+
+const particles = new THREE.Points(particlesGeometry, particlesMaterial)
+scene.add(particles)
+
+gui
+    .addColor(parameters, 'materialColor')
+    .onChange(() =>
+    {
+        material.color.set(parameters.materialColor)
+        particlesMaterial.color.set(parameters.materialColor)
+    })
+
 //Lights
 
 const directionalLight = new THREE.DirectionalLight('#ffffff, 3')
@@ -130,9 +162,26 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 //Scroll
 
 let scrollY = window.scrollY
+let currentSection = 0
+
 
 window.addEventListener('scroll', () =>{
     scrollY = window.scrollY
+    const newSection = Math.round(scrollY/sizes.height)
+    if (newSection != currentSection){
+        currentSection = newSection
+
+        gsap.to(
+            sectionMeshes[currentSection].rotation,{
+                duration:1.5,
+                ease:"power2.inOut",
+                x:'+=6',
+                y: "+=3",
+                z:'+=1.5'
+            }
+        )
+    }
+    
 })
 
 //Cursor
@@ -173,8 +222,8 @@ const tick = () =>
     //Animate Meshes
     for(const mesh of sectionMeshes)
     {
-        mesh.rotation.x = elapsedTime * 1
-        mesh.rotation.y = elapsedTime * 0.12
+        mesh.rotation.x += deltaTime * 1
+        mesh.rotation.y += deltaTime * 0.12
     }
 
 
