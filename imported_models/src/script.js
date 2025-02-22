@@ -1,6 +1,8 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import GUI from 'lil-gui'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 
 /**
  * Base
@@ -13,6 +15,50 @@ const canvas = document.querySelector('canvas.webgl')
 
 // Scene
 const scene = new THREE.Scene()
+
+/**
+ * Models
+ */
+
+//DRACO loader must be before gltfLoader
+const dracoLoader = new DRACOLoader()
+
+//draco folder is at /node_modules/three/examples/jsm/libs/ ** move it to static folder and set decoderPath
+dracoLoader.setDecoderPath('/draco/')
+
+const gltfLoader = new GLTFLoader()
+
+//will only use dracoLoader if needed, can still use other gltf types
+gltfLoader.setDRACOLoader(dracoLoader)
+
+let mixer = null
+
+gltfLoader.load(
+    "/models/Fox/glTF/Fox.gltf",(gltf)=>{
+
+        // //spread values of scene.children and add to separate array to get all meshes
+    
+        // const children = [...gltf.scene.children]
+
+        // for (const child of children){
+        //     scene.add(child)
+        // }
+
+        mixer = new THREE.AnimationMixer(gltf.scene)
+
+        const action = mixer.clipAction(gltf.animations[0])
+
+        action.play()
+
+        console.log(action)
+        //same functionality as above code, scene is a group
+        gltf.scene.scale.set(0.025,0.025,0.025)
+        scene.add(gltf.scene)
+
+    },
+)
+
+
 
 /**
  * Floor
@@ -104,6 +150,12 @@ const tick = () =>
     const elapsedTime = clock.getElapsedTime()
     const deltaTime = elapsedTime - previousTime
     previousTime = elapsedTime
+
+    //Mixer update
+    if(mixer !==null){
+        mixer.update(deltaTime)
+    }
+  
 
     // Update controls
     controls.update()
