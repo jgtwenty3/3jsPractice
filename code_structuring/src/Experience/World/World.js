@@ -24,14 +24,13 @@ export default class World{
 		this.fox = new Fox()
 		this.environment = new Environment()
 
-		
-
-
-
-
-
-		
 		})
 
+	}
+
+	update(){
+		
+		if(this.fox)
+			this.fox.update()
 	}
 }
