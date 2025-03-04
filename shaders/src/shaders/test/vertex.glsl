@@ -9,6 +9,7 @@ attribute vec3 position;
 attribute vec2 uv;
 
 varying vec2 vUv;
+varying float vElevation;
 
 // attribute float aRandom;
 
@@ -17,8 +18,15 @@ varying vec2 vUv;
 void main()
 {
 	vec4 modelPosition = modelMatrix * vec4(position,1.0);
-	modelPosition.z += sin(modelPosition.x *uFrequency.x - uTime) * .1;
-	modelPosition.z += sin(modelPosition.y *uFrequency.y- uTime) * .1;
+
+	float elevation = sin(modelPosition.x *uFrequency.x - uTime) * .1;
+	elevation += sin(modelPosition.y *uFrequency.y- uTime) * .1;
+
+
+	modelPosition.z += elevation;
+
+	vElevation = elevation;
+
 	// modelPosition.z += aRandom * 0.1;
 
 
