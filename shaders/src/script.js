@@ -20,6 +20,7 @@ const scene = new THREE.Scene()
  * Textures
  */
 const textureLoader = new THREE.TextureLoader()
+const flagTexture = textureLoader.load('/textures/flag-mexican.jpg')
 
 /**
  * Test mesh
@@ -40,11 +41,20 @@ geometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms,1))
 const material = new THREE.RawShaderMaterial({
     vertexShader:testVertexShader,
     fragmentShader:testFragmentShader,
-    transparent:true,
+    uniforms:{
+        uFrequency:{value:new THREE.Vector2(10,5)}, //must be in object
+        uTime: {value:0},
+        uColor: {value: new THREE.Color('orange')},
+        uTexture: {value:flagTexture}
+    }
 })
+
+gui.add(material.uniforms.uFrequency.value,'x').min(0).max(20).step(0.01).name('frequencyX')
+gui.add(material.uniforms.uFrequency.value,'y').min(0).max(20).step(0.01).name('frequencyX')
 
 // Mesh
 const mesh = new THREE.Mesh(geometry, material)
+mesh.scale.y = 2/3
 scene.add(mesh)
 
 /**
@@ -102,6 +112,9 @@ const tick = () =>
 
     // Update controls
     controls.update()
+
+    //Update material
+    material.uniforms.uTime.value = elapsedTime
 
     // Render
     renderer.render(scene, camera)
