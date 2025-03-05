@@ -1,12 +1,5 @@
-uniform mat4 projectionMatrix; //transform teh coordinates into the clip space coordinates
-uniform mat4 viewMatrix; //apply transformations relative to camera (position, rotation, fov, near, far)
-uniform mat4 modelMatrix; //transformations relative to mesh position, rotation, scale
 uniform vec2 uFrequency;
 uniform float uTime;
-
-
-attribute vec3 position;
-attribute vec2 uv;
 
 varying vec2 vUv;
 varying float vElevation;
